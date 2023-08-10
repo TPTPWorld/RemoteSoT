@@ -243,7 +243,6 @@ int main(int argc,char * argv[]) {
         curl_easy_cleanup(CurlHandle);
     }
     curl_global_cleanup();
-printf("Delete %s\n",TemporaryFileName);
     remove(TemporaryFileName);
     if (CurlResult != CURLE_OK) {
         return(EXIT_FAILURE);

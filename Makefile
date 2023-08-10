@@ -1,6 +1,6 @@
 #----Set TPTP_HOME if not already imported from environment
 TPTP_HOME ?= /home/tptp
-JJPARSER = $(TPTP_HOME)/ServiceTools/JJParser
+JJPARSER = ./JJParser
 
 CC = gcc
 #----Need to specify -I/usr/local/include -L/usr/local/lib to get latest curl stuff

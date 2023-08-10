@@ -21,7 +21,6 @@ typedef struct {
 
 #define USAGE "Usage: RemoteSoT <options> [<File name>]\n \
     <options> are ...\n \
-    -v              --version    - print version information\n \
     -h --help       --help       - print this help\n \
     -w[<status>]    --what       - list available ATP systems\n \
     -q<quietness>   --quiet      - control amount of output\n \
