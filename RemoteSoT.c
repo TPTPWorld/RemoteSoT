@@ -2,6 +2,8 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
@@ -85,13 +87,13 @@ int * URLParametersLength,CURL * CurlHandle) {
         ExtendString(URLParameters,URLEncoded,URLParametersLength);
         curl_free(URLEncoded);
     } else {
-        QPRINTF(OptionValues,4)("ERROR: Could not URL encode %s\n",DataToEncode);
+        printf("ERROR: Could not URL encode %s\n",DataToEncode);
         exit(EXIT_FAILURE);
     }
 }
 //-------------------------------------------------------------------------------------------------
 //----Caller is responsible for freeing the malloced memory that is returned.
-curl_mime * BuildURLParameters(OptionsType OptionValues,CURL * CurlHandle) {
+curl_mime * BuildRemoteSoTURLParameters(OptionsType OptionValues,CURL * CurlHandle) {
 
     curl_mime * MultipartForm;
     curl_mimepart * MultipartField;
@@ -190,61 +192,37 @@ curl_mime * BuildURLParameters(OptionsType OptionValues,CURL * CurlHandle) {
     return(MultipartForm);
 }
 //-------------------------------------------------------------------------------------------------
-size_t ReadCallback(void * TheReturnedData,size_t ElementSize,size_t NumberOfElements,
-void * UserMemory) {
-
-    int Index;
-    char * TheReturnedChars;
-    int NumberOfChars;
-
-    TheReturnedChars = (char *)TheReturnedData;
-    NumberOfChars = (ElementSize * NumberOfElements)/sizeof(char);
-
-    for (Index = 0;Index < NumberOfChars;Index++) {
-        printf("%c",TheReturnedChars[Index]);
-    }
-
-    return(ElementSize*NumberOfElements);
-}
-//-------------------------------------------------------------------------------------------------
 int main(int argc,char * argv[]) {
 
     OptionsType OptionValues;
-    curl_mime * MultipartForm;
     CURL * CurlHandle;
-    CURLcode CurlResult;
+    curl_mime * MultipartForm;
     extern String TemporaryFileName;
+    FILE * DataReadHandle;
+    SuperString OneLine;
  
     if (!ProcessCommandLine(argc,argv,&OptionValues)) {
-        QPRINTF(OptionValues,4)("ERROR: Invalid command line arguments\n");
+        printf("ERROR: Invalid command line arguments\n");
         exit(EXIT_FAILURE);
     }
 
-    curl_global_init(CURL_GLOBAL_ALL);
-    CurlResult = 0;
-    if ((CurlHandle = curl_easy_init()) != NULL) {
-        curl_easy_setopt(CurlHandle,CURLOPT_URL,SYSTEMONTPTP_FORMREPLY_URL);
-
-        MultipartForm = BuildURLParameters(OptionValues,CurlHandle);
-        curl_easy_setopt(CurlHandle,CURLOPT_MIMEPOST,MultipartForm);
-//        curl_easy_setopt(CurlHandle,CURLOPT_POSTFIELDS,URLParameters);
-// "NoHTML=1&QuietFlag=q1&SubmitButton=ListSystems&ListStatus=READY");
-        curl_easy_setopt(CurlHandle,CURLOPT_USERAGENT,"libcurl-agent/1.0");
-        // curl_easy_setopt(CurlHandle,CURLOPT_FOLLOWLOCATION,1L);
-
-        curl_easy_setopt(CurlHandle,CURLOPT_WRITEFUNCTION,ReadCallback);
-        curl_easy_setopt(CurlHandle,CURLOPT_WRITEDATA,NULL);
-
-        CurlResult = curl_easy_perform(CurlHandle);
-        if (CurlResult != CURLE_OK) {
-            QPRINTF(OptionValues,4)("ERROR: curl failed: %s\n",curl_easy_strerror(CurlResult));
-        }
-        curl_mime_free(MultipartForm);
-        curl_easy_cleanup(CurlHandle);
+    if ((CurlHandle = InitializeRemoteSoT()) == NULL) {
+        return(EXIT_FAILURE);
     }
-    curl_global_cleanup();
+
+    if ((MultipartForm = BuildRemoteSoTURLParameters(OptionValues,CurlHandle)) == NULL) {
+        printf("ERROR: Could not build multi-part form\n");
+        return(EXIT_FAILURE);
+    }
+
+    if ((DataReadHandle = StartRemoteSoT(NULL,0,NULL,NULL,0,NULL,MultipartForm)) != NULL) {
+        while (fgets(OneLine,SUPERSTRINGLENGTH,DataReadHandle) != NULL) {
+            printf("%s",OneLine);
+        }
+        fclose(DataReadHandle);
+    }
     remove(TemporaryFileName);
-    if (CurlResult != CURLE_OK) {
+    if (DataReadHandle == NULL) {
         return(EXIT_FAILURE);
     } else {
         return(EXIT_SUCCESS);

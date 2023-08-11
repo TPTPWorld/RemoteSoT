@@ -18,4 +18,4 @@ RemoteSoT: $(OBJS) RemoteSoT.o RemoteSoT.h
 	$(CC) $(CFLAGS) -c -o $*.o $*.c
 
 clean:
-	rm -f *.o RemoteSoT
+	rm -f *.o RemoteSoT $(JJPARSER)/*.o

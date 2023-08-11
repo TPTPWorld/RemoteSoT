@@ -16,8 +16,8 @@ typedef struct {
     int TSTPOutput;
 } OptionsType;
 //-------------------------------------------------------------------------------------------------
-// #define SYSTEMONTPTP_FORMREPLY_URL "https://www.tptp.org/cgi-bin/SystemOnTPTPFormReply"
-#define SYSTEMONTPTP_FORMREPLY_URL "https://tptp.cs.miami.edu/cgi-bin/SystemOnTPTPFormReply"
+// #define SYSTEM_ON_TPTP_FORMREPLYURL "https://www.tptp.org/cgi-bin/SystemOnTPTPFormReply"
+#define SYSTEM_ON_TPTP_FORMREPLYURL "https://tptp.cs.miami.edu/cgi-bin/SystemOnTPTPFormReply"
 
 #define USAGE "Usage: RemoteSoT <options> [<File name>]\n \
     <options> are ...\n \
@@ -32,8 +32,5 @@ typedef struct {
     -S              --tstp       - TSTP format output\n \
     -p<filename>    --problem    - TPTP problem name\n \
     -y<proxy:port>  --proxy      - use this proxy:port\n \
-    <File name>                  - if not TPTP problem (-- for stdin)"
-#define VERSION = "version 1.0.0"
-//-------------------------------------------------------------------------------------------------
-#define QPRINTF(Q,P) if ((P) >= (Q.Quietness)) printf
+    <File name>                  - if not TPTP problem (-- for stdin)\n"
 //-------------------------------------------------------------------------------------------------
