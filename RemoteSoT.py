@@ -1,9 +1,9 @@
-#!/usr/local/bin/python3
+#!/usr/bin/python3
 #--------------------------------------------------------------------------------------------------
 import sys,requests,getopt
 from typing import List, Tuple
 
-SystemOnTPTPFormReplyURL = "https://www.tptp.org/cgi-bin/SystemOnTPTPFormReply"
+SystemOnTPTPFormReplyURL = "https://tptp.org/cgi-bin/SystemOnTPTPFormReply"
 
 USAGE = f"Usage: RemoteSOT <options> [<File name>]\n \
     <options> are ...\n \
@@ -137,7 +137,7 @@ def main() -> None:
         sys.exit()
     urlParameters = parseCommandLine(args)
 
-#    print(urlParameters)
+#DEBUG    print(urlParameters)
     requestResult = requests.post(SystemOnTPTPFormReplyURL,files=urlParameters)
     print(requestResult.text)
 #--------------------------------------------------------------------------------------------------

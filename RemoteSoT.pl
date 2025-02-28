@@ -6,7 +6,7 @@ use HTTP::Request::Common;
 use LWP;
 use File::Temp qw/ mkstemp /;
 $ENV{PERL_LWP_SSL_VERIFY_HOSTNAME} = 0;
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
 # my $SystemOnTPTPFormReplyURL = "https://www.tptp.org/cgi-bin/SystemOnTPTPFormReply";
 my $SystemOnTPTPFormReplyURL = "https://tptp.cs.miami.edu/cgi-bin/SystemOnTPTPFormReply";
 
@@ -25,7 +25,7 @@ my %URLParameters = (
     "AutoModeSystemsLimit" => 3,
     "X2TPTP" => "",
     );
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------
     my $URL;
     my %Options;
     my @Content;
@@ -103,8 +103,7 @@ my %URLParameters = (
     if (exists($Options{'s'})) {
         $URLParameters{"SubmitButton"} = "RunSelectedSystems";
         $URLParameters{"System___$Options{'s'}"} = $Options{'s'};
-        $URLParameters{"TimeLimit___$Options{'s'}"} = 
-$URLParameters{"AutoModeTimeLimit"};
+        $URLParameters{"TimeLimit___$Options{'s'}"} = $URLParameters{"AutoModeTimeLimit"};
         delete($URLParameters{"AutoMode"});
         delete($URLParameters{"AutoModeTimeLimit"});
         delete($URLParameters{"AutoModeSystemsLimit"});
@@ -164,8 +163,7 @@ $URLParameters{"AutoModeTimeLimit"};
 
 #----Get single file name
     if ($URLParameters{"ProblemSource"} eq "UPLOAD") {
-        if (scalar(@ARGV) == 0 || (scalar(@ARGV) >= 1 &&
-$ARGV[0] eq "--")) {
+        if (scalar(@ARGV) == 0 || (scalar(@ARGV) >= 1 && $ARGV[0] eq "--")) {
             ($TempHandle,$TemporaryFile) = mkstemp($TemporaryFile);
             while (defined($Line = <STDIN>)) {
                 print($TempHandle $Line);
@@ -194,4 +192,4 @@ Content_Type => 'form-data',Content => \%URLParameters);
 
     printf("%s\n",$Response->content);
 
-#------------------------------------------------------------------------------
+#--------------------------------------------------------------------------------------------------

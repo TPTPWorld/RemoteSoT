@@ -1,18 +1,18 @@
-//=============================================================================
+//=================================================================================================
 import java.io.*;
 import java.util.*;
 import gnu.getopt.LongOpt;
 import gnu.getopt.Getopt;
 import java.net.URLConnection;
 import java.net.URL;
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 public class RemoteSOT {
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
     private static Scanner keyboard = new Scanner(System.in);
 //----Note, using www.tptp.org does not work
     private static String SystemOnTPTPFormReplyURL = 
 "http://www.tptp.org/cgi-bin/SystemOnTPTPFormReply";
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
     public static void main(String args[]){
 
         int intOption;
@@ -116,10 +116,8 @@ URLParameters.get("AutoModeTimeLimit"));
 //----Get single file name
         if (URLParameters.containsKey("ProblemSource") &&
 URLParameters.get("ProblemSource").equals("UPLOAD")) {
-            if (args.length > g.getOptind() && 
-!args[g.getOptind()].equals("--")) {
-                URLParameters.put("UPLOADProblem",
-new File(args[g.getOptind()]));
+            if (args.length > g.getOptind() && !args[g.getOptind()].equals("--")) {
+                URLParameters.put("UPLOADProblem",new File(args[g.getOptind()]));
             } else {
 //----Read from stdin
                 URLParameters.put("UPLOADProblem",System.in);
@@ -142,6 +140,6 @@ ClientHttpRequest.post(new URL(SystemOnTPTPFormReplyURL),URLParameters)));
         }
 
     }
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 }
-//=============================================================================
+//=================================================================================================

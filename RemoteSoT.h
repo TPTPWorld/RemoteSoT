@@ -16,8 +16,8 @@ typedef struct {
     int TSTPOutput;
 } OptionsType;
 //-------------------------------------------------------------------------------------------------
-// #define SYSTEM_ON_TPTP_FORMREPLYURL "https://www.tptp.org/cgi-bin/SystemOnTPTPFormReply"
-#define SYSTEM_ON_TPTP_FORMREPLYURL "https://tptp.cs.miami.edu/cgi-bin/SystemOnTPTPFormReply"
+#define SYSTEM_ON_TPTP_FORMREPLYURL "https://tptp.org/cgi-bin/SystemOnTPTPFormReply"
+// #define SYSTEM_ON_TPTP_FORMREPLYURL "https://tptp.cs.miami.edu/cgi-bin/SystemOnTPTPFormReply"
 
 #define USAGE "Usage: RemoteSoT <options> [<File name>]\n \
     <options> are ...\n \
