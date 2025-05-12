@@ -1,0 +1,8 @@
+To make .jar ...
+    jar -cfm RemoteGDV.jar manifest.txt RemoteGDV.class ClientHttpRequest.class gnu/getopt/*
+To run ...
+    java -jar RemoteGDV.jar -P Vampire--- ~/ServiceTools/GDVDir/TestFiles/TestsForLambdaPi/TUT001+1/E---3.0_THM-CRf.s
+
+The "-P Vampire---" is optional - only if you want to specify a checker system.
+
+

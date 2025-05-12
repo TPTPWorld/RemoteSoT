@@ -51,7 +51,7 @@ int ProcessCommandLine(int argc,char * argv[],OptionsType * OptionValues) {
                 break;
             case 's':
                 strcpy(OptionValues->SubmitButton,"RunSelectedSystems");
-                sprintf(OptionValues->System,optarg);
+                sprintf(OptionValues->System,"%s",optarg);
                 break;
             case 't':
                 OptionValues->TimeLimit = atoi(optarg);

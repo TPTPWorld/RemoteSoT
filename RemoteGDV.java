@@ -1,18 +1,18 @@
-//=============================================================================
+//=================================================================================================
 import java.io.*;
 import java.util.*;
 import gnu.getopt.LongOpt;
 import gnu.getopt.Getopt;
 import java.net.URLConnection;
 import java.net.URL;
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 public class RemoteGDV {
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
     private static Scanner keyboard = new Scanner(System.in);
 //----Note, using www.tptp.org does not work
     private static String SystemOnTPTPFormReplyURL = 
-"http://www.tptp.org/cgi-bin/SystemOnTPTPFormReply";
-//-----------------------------------------------------------------------------
+"https://tptp.org/cgi-bin/SystemOnTPTPFormReply";
+//-------------------------------------------------------------------------------------------------
     public static void main(String args[]){
 
         int intOption;
@@ -23,19 +23,16 @@ public class RemoteGDV {
         BufferedWriter fileHandle;
         String line;
 
-        URLParameters.put("NoHTML",new Integer(1));
-        URLParameters.put("QuietFlag","-q2");
-        URLParameters.put("SubmitButton","RunParallel");
+        URLParameters.put("NoHTML",1);
+        URLParameters.put("QuietFlag","-q1");
         URLParameters.put("ProblemSource","UPLOAD");
-        URLParameters.put("AutoModeTimeLimit",new Integer(300));
-        URLParameters.put("AutoMode","-cE");
-        URLParameters.put("AutoModeSystemsLimit",new Integer(3));
-        URLParameters.put("X2TPTP","");
+        URLParameters.put("TimeLimit",300);
 
 //----Get format and transform options if specified
-        Getopt g = new Getopt("RemoteGDV",args,"hw:rq:t:c:l:s:Sp:a:");
+        Getopt g = new Getopt("RemoteGDV",args,"hq:t:P:");
         while((intOption = g.getopt()) != -1) {
             option = (char)intOption;
+//----Remove any old value
             if (Options.containsKey(String.valueOf(option))) {
                 Options.remove(String.valueOf(option));
             }
@@ -44,100 +41,47 @@ public class RemoteGDV {
 "Usage: java RemoteGDV <options> [<File name>]");
                 System.out.println("<options> are ...");
                 System.out.println("-h            - print this help");
-                System.out.println("-w[<status>]  - list available ATP systems");
-                System.out.println("-r            - recommend ATP systems");
                 System.out.println("-q<quietness> - control amount of output");
                 System.out.println("-t<timelimit> - CPU time limit for system");
-                System.out.println("-c<automode>  - one of N, E, S");
-                System.out.println("-l<syslimit>  - maximal systems for automode");
-                System.out.println("-s<system>    - specified system to use");
-                System.out.println("-o TPTP       - TPTP format output");
-                System.out.println("-p<filename>  - TPTP problem name");
+                System.out.println("-P<system>    - Theorem checker system");
                 System.out.println("<File name>   - if not TPTP problem");
                 return;
-            }
-//DEBUG System.out.println(option + " is ==" + Options.get(String.valueOf(option)) + "==");
-            if (option == 'w') {
-                Options.put(String.valueOf(option),g.getOptarg());
-            } else {
-                Options.put(String.valueOf(option),g.getOptarg());
             }
             Options.put(String.valueOf(option),g.getOptarg());
         }
 
 //----Transfer from Options to URLParameters
-//----What systems flag
-        if (Options.containsKey("w")) {
-            URLParameters.put("SubmitButton","ListSystems");
-            URLParameters.put("ListStatus",Options.get("w"));
-            URLParameters.remove("AutoMode");
-            URLParameters.remove("AutoModeTimeLimit");
-            URLParameters.remove("AutoModeSystemsLimit");
-            URLParameters.remove("ProblemSource");
+        URLParameters.put("SubmitButton","RunSelectedSystems");
+        URLParameters.put("System___GDV---1.0","GDV---1.0");
+        if (Options.containsKey("P") && ((String)Options.get("P")).contains("---")) {
+            URLParameters.put("Command___GDV---1.0","run_GDV %s 30 -P " + Options.get("P"));
+        } else {
+            URLParameters.put("Command___GDV---1.0","run_GDV %s 30");
         }
-//----Recommend systems flag
-            URLParameters.put("SubmitButton","RecommendSystems");
-        if (Options.containsKey("w")) {
-            URLParameters.remove("AutoMode");
-            URLParameters.remove("AutoModeTimeLimit");
-            URLParameters.remove("AutoModeSystemsLimit");
-        }
+        URLParameters.put("TimeLimit___TimeLimit",URLParameters.get("TimeLimit"));
+        URLParameters.remove("AutoMode");
+        URLParameters.remove("AutoModeTimeLimit");
+        URLParameters.remove("AutoModeSystemsLimit");
 //----Quiet flag
         if (Options.containsKey("q")) {
+System.out.println("Setting quietness to " + "-q" + Options.get("q"));
             URLParameters.put("QuietFlag","-q" + Options.get("q"));
         }
 //----Time limit
         if (Options.containsKey("t")) {
             URLParameters.put("AutoModeTimeLimit",Options.get("t"));
         }
-//----Automode
-        if (Options.containsKey("c")) {
-            URLParameters.put("AutoMode","-c" + Options.get("c"));
-        }
-//----Systems limit
-        if (Options.containsKey("l")) {
-            URLParameters.put("AutoModeSystemsLimit",Options.get("l"));
-        }
-//----Selected system. Do after time limit as it gets moved across
-        if (Options.containsKey("s")) {
-            URLParameters.put("SubmitButton","RunSelectedSystems");
-            URLParameters.put("System___GDV---0.0","GDV---0.0");
-            URLParameters.put("Command___GDV---0.0","GDV -e -p " +
-Options.get("s") + " %s");
-            URLParameters.put("TimeLimit___TimeLimit",
-URLParameters.get("AutoModeTimeLimit"));
-            URLParameters.remove("AutoMode");
-            URLParameters.remove("AutoModeTimeLimit");
-            URLParameters.remove("AutoModeSystemsLimit");
-        }
-//----TSTP format output request
-        if (Options.containsKey("S")) {
-            URLParameters.put("X2TPTP","-S");    
-        }
-//----TPTP file name
-        if (Options.containsKey("p")) {
-            URLParameters.put("ProblemSource","TPTP");
-            URLParameters.put("TPTPProblem",(String)Options.get("p"));
-        }
-//----Password
-        if (Options.containsKey("a")) {
-            URLParameters.put("CPUPassword",Options.get("a"));
-        }
 
 //----Get single file name
-        if (URLParameters.containsKey("ProblemSource") &&
-URLParameters.get("ProblemSource").equals("UPLOAD")) {
-            if (args.length > g.getOptind() && 
-!args[g.getOptind()].equals("--")) {
-                URLParameters.put("UPLOADProblem",
+        if (args.length > g.getOptind() && !args[g.getOptind()].equals("--")) {
+            URLParameters.put("UPLOADProblem",
 new File(args[g.getOptind()]));
-            } else {
+        } else {
 //----Read from stdin
-                URLParameters.put("UPLOADProblem",System.in);
+            URLParameters.put("UPLOADProblem",System.in);
 //TEST URLParameters.remove("ProblemSource");
 //TEST URLParameters.put("ProblemSource","FORMULAE");
 //TEST URLParameters.put("FORMULAEProblem","fof(a,conjecture,a<=>a).");
-            }
         }
  
         try {
@@ -153,7 +97,7 @@ ClientHttpRequest.post(new URL(SystemOnTPTPFormReplyURL),URLParameters)));
         }
 
     }
-//-----------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 }
 //=============================================================================
 //----These are the necessary imports, which are done above in this file
